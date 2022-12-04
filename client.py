@@ -3,6 +3,7 @@
 import socket
 import json
 import sys
+import threading
 
 def display_commands():
     print('---------------------------------------------------------------------------')
@@ -39,40 +40,41 @@ print ("UDP target IP:", udp_host)
 print ("UDP target Port:", udp_port)
 display_commands()
 
-while run_client == True:
-    
+def send():
+    while True:
+        input_script = input('Enter input script: /')
+        splitted_script = input_script.split(sep=' ')
 
-    input_script = input('Enter input script: /')
-    splitted_script = input_script.split(sep=' ')
+        if splitted_script[0] == 'register':
 
-    if splitted_script[0] == 'register':
-        reg_req = register_user(splitted_script[1])
+            reg_req = register_user(splitted_script[1])
 
-        try:
-            request_to_register = register_user(splitted_script[1])
+            try:
+                request_to_register = register_user(splitted_script[1])
 
-            #convert dictionary to JSON (for interpoability)
-            jsonRequest = json.dumps(request_to_register)
-            # send request to register to server
-            sock.sendto(bytes(jsonRequest, 'utf-8'),(udp_host,udp_port))
-            #wait for response from server
-            data, server_addr = sock.recvfrom(1024)
+                #convert dictionary to JSON (for interpoability)
+                jsonRequest = json.dumps(request_to_register)
 
-            #convert server response to dict
-            server_response = json.loads(data)
+                # send request to register to server
+                sock.sendto(bytes(jsonRequest, 'utf-8'),(udp_host,udp_port))
 
-                
-            print(server_response['message'])
-        except:
-            print('Uknown error')
+                data, server_addr = sock.recvfrom(1024)
 
-        
+                server_response = json.loads(data)
 
-    elif splitted_script[0] == 'leave':
-        run_client = False
+                print(server_response['message'])
+            except:
+                print('Uknown error')
 
-    elif splitted_script[0] == '?':
-        display_commands()
+        elif splitted_script[0] == 'leave':
+            run_client = False
+
+        elif splitted_script[0] == '?':
+            display_commands()
+
+t1 = threading.Thread(target=send)
+t1.start()
+
 
    
 
