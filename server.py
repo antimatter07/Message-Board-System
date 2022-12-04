@@ -8,7 +8,7 @@ udp_host = socket.gethostname()
 udp_port = 12345			                
 
 
-
+# list of registered users
 registered_users =[]
 
 sock.bind((udp_host,udp_port))

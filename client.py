@@ -1,4 +1,4 @@
-#!usr/bin/python
+
 
 import socket
 import json
@@ -31,10 +31,6 @@ sock = socket.socket(socket.AF_INET,socket.SOCK_DGRAM)      # For UDP
 
 udp_host = socket.gethostname()		# Host IP
 udp_port = 12345
-
-# client is always initially not registered
-is_registered = False	
-
 
 
 run_client = True
@@ -81,7 +77,7 @@ while run_client == True:
    
 
 
-    #wait for server response
+ 
 
     
 
