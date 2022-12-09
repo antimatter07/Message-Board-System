@@ -179,6 +179,9 @@ def broadcastMessages():
 			# HANDLING LEAVE COMMAND
 			elif message['command'] == "leave" and address in joined_addresses:
 				pass
+
+			else:
+				notJoined(address)
 			
 
 
