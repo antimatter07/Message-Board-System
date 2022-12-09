@@ -27,10 +27,9 @@ def register_user(client_handle):
 
     return register
 
-
 sock = socket.socket(socket.AF_INET,socket.SOCK_DGRAM)      # For UDP
 
-udp_host = socket.gethostname()		# Host IP
+udp_host = "127.0.0.1"		# Host IP
 udp_port = 12345
 
 
@@ -40,43 +39,100 @@ print ("UDP target IP:", udp_host)
 print ("UDP target Port:", udp_port)
 display_commands()
 
+def listen():
+    while True:
+        try:
+            data, server_addr = sock.recvfrom(1024)
+
+            server_response = json.loads(data)
+
+            print(server_response['message'], "\n")
+        except Exception as e:
+            pass
+
 def send():
     while True:
-        input_script = input('Enter input script: /')
-        splitted_script = input_script.split(sep=' ')
+        input_script = input()
 
-        if splitted_script[0] == 'register':
+        slash = input_script[0]
 
-            reg_req = register_user(splitted_script[1])
+        if(slash == '/' and len(input_script) > 1):
+            
+            splitted_script = input_script[1:].split(sep=' ')
 
-            try:
-                request_to_register = register_user(splitted_script[1])
+            if splitted_script[0] == "join" and len(splitted_script) == 3:
+                msg = {
+                    "command": "join",
+                    "message": splitted_script[1:]
+                }
+                jsonRequest = json.dumps(msg)
 
-                #convert dictionary to JSON (for interpoability)
-                jsonRequest = json.dumps(request_to_register)
+                try:
+                    sock.sendto(bytes(jsonRequest, 'utf-8'), (udp_host, udp_port))
+                except Exception as e:
+                    print(e)
 
-                # send request to register to server
-                sock.sendto(bytes(jsonRequest, 'utf-8'),(udp_host,udp_port))
 
-                data, server_addr = sock.recvfrom(1024)
+            elif splitted_script[0] == 'register':
+                try:
+                    request_to_register = register_user(splitted_script[1])
+                    jsonRequest = json.dumps(request_to_register)
 
-                server_response = json.loads(data)
+                    try:
+                        sock.sendto(bytes(jsonRequest, 'utf-8'),(udp_host,udp_port))
+                    except Exception as e:
+                        print("Error: ", e)
 
-                print(server_response['message'])
-            except:
-                print('Uknown error')
+                except Exception as e:
+                    print(e)
 
-        elif splitted_script[0] == 'leave':
-            run_client = False
 
-        elif splitted_script[0] == '?':
-            display_commands()
+            elif splitted_script[0] == 'all':
+                msg = {
+                    "command": "all",
+                    "message": " ".join(splitted_script[1:])
+                }
+                jsonRequest = json.dumps(msg)
+                try:
+                    sock.sendto(bytes(jsonRequest, 'utf-8'), (udp_host, udp_port))
+                except Exception as e:
+                    print(e)
 
-t1 = threading.Thread(target=send)
+
+            elif splitted_script[0] == 'msg' and len(splitted_script) >= 3:
+                msg = {
+                    "command": "msg",
+                    "handle": splitted_script[1],
+                    "message": splitted_script[2:]
+                }
+                jsonRequest = json.dumps(msg)
+                try:
+                    sock.sendto(bytes(jsonRequest, 'utf-8'), (udp_host, udp_port))
+                except Exception as e:
+                    print(e)
+                print()
+
+
+            elif splitted_script[0] == 'leave':
+                run_client = False
+
+
+            elif splitted_script[0] == '?':
+                display_commands()
+                pass
+
+        else:
+            print("Please Enter Valid Command\n")
+
+t1 = threading.Thread(target=listen)
 t1.start()
 
-
+t2 = threading.Thread(target=send)
+t2.start()
    
+# x = ["ye","test","yeye","hello","hi"]
+# print(" ".join(x[1:]))
+
 
 
  
