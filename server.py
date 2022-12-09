@@ -106,8 +106,14 @@ def handleMsg(message, address, sender):
 			"command": "msg",
 			"message": "[From " + sender + "]: " + " ".join(message['message'])
 		}
+		res2 = {
+			"command": "msg",
+			"message": "[To " + receiver_username + "]: " + " ".join(message['message'])
+		}
 		json_response = json.dumps(res).encode('utf-8')
+		json_response2 = json.dumps(res2).encode('utf-8')
 		sock.sendto(json_response, receiver_address)
+		sock.sendto(json_response2, address)
 	
 
 
