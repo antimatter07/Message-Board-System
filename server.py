@@ -116,6 +116,19 @@ def handleMsg(message, address, sender):
 		sock.sendto(json_response2, address)
 	
 
+def handleLeave(address):
+	for user in registered_users:
+		if user['address'] == address:
+			registered_users.remove(user)
+
+	joined_addresses.remove(address)
+
+	res = {
+		"command": "Success",
+		"message": "Connection closed. Thank you!"
+	}
+	json_response = json.dumps(res).encode('utf-8')
+	sock.sendto(json_response, address)
 
 # Send JSON if Not Registered
 def notRegistered(message, address):
@@ -184,13 +197,11 @@ def broadcastMessages():
 
 			# HANDLING LEAVE COMMAND
 			elif message['command'] == "leave" and address in joined_addresses:
-				pass
+				handleLeave(address)
 
 			else:
 				notJoined(address)
 			
-
-
 
 # Check if user is registered
 def isRegistered(username, address):
