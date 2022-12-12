@@ -53,7 +53,7 @@ def listen():
                 print(server_response['message'], "\n")
 
         except Exception as e:
-            print("Error: Connection to the Message Board Server has failed! Please check IP Address and Port Number.")
+            print("Error: Connection to the Message Board Server has failed! Please check IP Address and Port Number.\n")
 
 def send():
     has_joined = False                  # To check if the client has joined a server
