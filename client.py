@@ -94,80 +94,93 @@ def send():
                 except:
                     print("Error: Connection to the Message Board Server has failed! Please check IP Address and Port Number.", "\n")
 
-            elif splitted_script[0] == 'register' and len(splitted_script) == 2:
+            elif splitted_script[0] == 'register':
                 if has_joined:
-                    try:
-                        request_to_register = register_user(splitted_script[1])
-                        jsonRequest = json.dumps(request_to_register)
-
+                    if  len(splitted_script) == 2:
                         try:
-                            sock.sendto(bytes(jsonRequest, 'utf-8'),(udp_host,udp_port))
+                            request_to_register = register_user(splitted_script[1])
+                            jsonRequest = json.dumps(request_to_register)
+
+                            try:
+                                sock.sendto(bytes(jsonRequest, 'utf-8'),(udp_host,udp_port))
+                            except Exception as e:
+                                print("Error in REGISTER: ", e)
+
                         except Exception as e:
-                            print("Error in REGISTER: ", e)
-
-                    except Exception as e:
-                        print(e)
+                            print(e)
+                    else:
+                        print("Error: Command parameters do not match or is not allowed. Type '/?' to see the list of commands.", "\n")
                 else:
                     print("Error: Please connect to the server first before entering other commands.", "\n")
 
 
-            elif splitted_script[0] == 'all' and len(splitted_script) >= 2:
+            elif splitted_script[0] == 'all':
                 if has_joined:
-                    msg = {
-                        "command": "all",
-                        "message": " ".join(splitted_script[1:])
-                    }
-                    jsonRequest = json.dumps(msg)
-                    try:
-                        sock.sendto(bytes(jsonRequest, 'utf-8'), (udp_host, udp_port))
-                    except Exception as e:
-                        print(e)
+                    if len(splitted_script) >= 2:
+                        msg = {
+                            "command": "all",
+                            "message": " ".join(splitted_script[1:])
+                        }
+                        jsonRequest = json.dumps(msg)
+                        try:
+                            sock.sendto(bytes(jsonRequest, 'utf-8'), (udp_host, udp_port))
+                        except Exception as e:
+                            print(e)
+                    else:
+                        print("Error: Command parameters do not match or is not allowed. Type '/?' to see the list of commands.", "\n")
                 else:
                     print("Error: Please connect to the server first before entering other commands.", "\n")
 
 
-            elif splitted_script[0] == 'msg' and len(splitted_script) >= 3:
+            elif splitted_script[0] == 'msg':
                 if has_joined:
-                    msg = {
-                        "command": "msg",
-                        "handle": splitted_script[1],
-                        "message": splitted_script[2:]
-                    }
-                    jsonRequest = json.dumps(msg)
-                    try:
-                        sock.sendto(bytes(jsonRequest, 'utf-8'), (udp_host, udp_port))
-                    except Exception as e:
-                        print(e)
-                    print()
+                    if len(splitted_script) >= 3:
+                        msg = {
+                            "command": "msg",
+                            "handle": splitted_script[1],
+                            "message": splitted_script[2:]
+                        }
+                        jsonRequest = json.dumps(msg)
+                        try:
+                            sock.sendto(bytes(jsonRequest, 'utf-8'), (udp_host, udp_port))
+                        except Exception as e:
+                            print(e)
+                        print()
+                    else:
+                        print("Error: Command parameters do not match or is not allowed. Type '/?' to see the list of commands.", "\n")
                 else:
                     print("Error: Please connect to the server first before entering other commands.", "\n")
 
 
             elif splitted_script[0] == 'leave':
                 if has_joined:
-                    msg = {
-                        "command": "leave",
-                        "message": " ".join(splitted_script[1:])
-                    }
-                    jsonRequest = json.dumps(msg)
-                    try:
-                        sock.sendto(bytes(jsonRequest, 'utf-8'), (udp_host, udp_port))
-                        has_joined = False
-                    except Exception as e:
-                        print(e)  
+                    if len(splitted_script) == 1:
+                        msg = {
+                            "command": "leave",
+                            "message": " ".join(splitted_script[1:])
+                        }
+                        jsonRequest = json.dumps(msg)
+                        try:
+                            sock.sendto(bytes(jsonRequest, 'utf-8'), (udp_host, udp_port))
+                            has_joined = False
+                        except Exception as e:
+                            print(e)
+                    else:
+                        print("Error: Command parameters do not match or is not allowed. Type '/?' to see the list of commands.", "\n")
                 else:
                     print("Error: Disconnection failed. Please connect to the server first.", "\n")
 
-
             elif splitted_script[0] == '?':
-                display_commands()
-                pass
+                if len(splitted_script) == 1:
+                    display_commands()
+                else:
+                    print("Error: Command parameters do not match or is not allowed. Type '/?' to see the list of commands.", "\n")
             
             else:
-                print("Error: Command parameters do not match or is not allowed. Type '/?' to see the list of commands.", "\n")
+                print("Error: Command Not Found. Type '/?' to see the list of commands.\n")
 
         else:
-            print("Error: Command parameters do not match or is not allowed. Type '/?' to see the list of commands.", "\n")
+            print("Type '/?' to see the list of commands.", "\n")
 
 t1 = threading.Thread(target=listen)
 t1.start()
