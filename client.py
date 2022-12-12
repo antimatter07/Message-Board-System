@@ -68,31 +68,34 @@ def send():
             
             splitted_script = input_script[1:].split(sep=' ')
             
-            if splitted_script[0] == "join" and len(splitted_script) == 3:
-                try:
-                    join_host = splitted_script[1]
-                    join_port = int(splitted_script[2])
+            if splitted_script[0] == "join":
+                if len(splitted_script) == 3:
+                    try:
+                        join_host = splitted_script[1]
+                        join_port = int(splitted_script[2])
 
-                    if join_host != udp_host or join_port != udp_port:
-                        raise Exception("Incorrect Server IP Address and/or Server Port.")
-                    else:
-                        msg = {
-                            "command": "join",
-                            "message": splitted_script[1:]
-                        }
-                        jsonRequest = json.dumps(msg)
+                        if join_host != udp_host or join_port != udp_port:
+                            raise Exception("Incorrect Server IP Address and/or Server Port.")
+                        else:
+                            msg = {
+                                "command": "join",
+                                "message": splitted_script[1:]
+                            }
+                            jsonRequest = json.dumps(msg)
 
-                        try:
-                            # TODO: check if the server is currently running
-                            # if sock.connect_ex((udp_host, 12345)) != 0:
-                            #     raise Exception("Server is not running")
-                            sock.sendto(bytes(jsonRequest, 'utf-8'), (udp_host, udp_port))
-                            has_joined = True
-                        except Exception as e:
-                            print("Error in JOIN: ", e)
-                            # print("Error: Server is not currently running.", '\n')
-                except:
-                    print("Error: Connection to the Message Board Server has failed! Please check IP Address and Port Number.", "\n")
+                            try:
+                                # TODO: check if the server is currently running
+                                # if sock.connect_ex((udp_host, 12345)) != 0:
+                                #     raise Exception("Server is not running")
+                                sock.sendto(bytes(jsonRequest, 'utf-8'), (udp_host, udp_port))
+                                has_joined = True
+                            except Exception as e:
+                                print("Error in JOIN: ", e)
+                                # print("Error: Server is not currently running.", '\n')
+                    except:
+                        print("Error: Connection to the Message Board Server has failed! Please check IP Address and Port Number.", "\n")
+                else:
+                    print("Error: Command parameters do not match or is not allowed. Type '/?' to see the list of commands.", "\n")
 
             elif splitted_script[0] == 'register':
                 if has_joined:
