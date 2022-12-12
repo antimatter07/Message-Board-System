@@ -37,7 +37,6 @@ def handleRegister(request, address):
 			"command": 'success',
 			"message": 'Registration successful. Welcome ' + request['handle']
 		}
-		print('Current list of registered users: ', registered_users[0]['username'])
 
 	json_response = json.dumps(msg).encode('utf-8')
 	sock.sendto(json_response, address)

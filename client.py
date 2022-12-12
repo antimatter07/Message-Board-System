@@ -8,13 +8,13 @@ import select
 
 def display_commands():
     print('---------------------------------------------------------------------------')
-    print('COMMANDS:')
-    print('/join <server_ip_add> <port>')
-    print('/leave')
-    print('/register <handle>')
-    print('/all <message>')
-    print('/msg <handle> <message>')
-    print('/?')
+    print('LIST OF COMMANDS:')
+    print('/join <server_ip_add> <port> \t - connect to a server')
+    print('/leave \t \t \t \t - disconnect from the connected server')
+    print('/register <handle> \t \t - register a unique handle for the server')
+    print('/all <message> \t \t \t - send a message to everyone in the server')
+    print('/msg <handle> <message> \t - send a direct message to a single user')
+    print('/? \t \t \t \t - display all input commands')
     print('----------------------------------------------------------------------------')
 
 
@@ -84,14 +84,10 @@ def send():
                             jsonRequest = json.dumps(msg)
 
                             try:
-                                # TODO: check if the server is currently running
-                                # if sock.connect_ex((udp_host, 12345)) != 0:
-                                #     raise Exception("Server is not running")
                                 sock.sendto(bytes(jsonRequest, 'utf-8'), (udp_host, udp_port))
                                 has_joined = True
                             except Exception as e:
                                 print("Error in JOIN: ", e)
-                                # print("Error: Server is not currently running.", '\n')
                     except:
                         print("Error: Connection to the Message Board Server has failed! Please check IP Address and Port Number.", "\n")
                 else:
