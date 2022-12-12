@@ -110,19 +110,28 @@ def send():
                     sock.sendto(bytes(jsonRequest, 'utf-8'), (udp_host, udp_port))
                 except Exception as e:
                     print(e)
-                print()
-
 
             elif splitted_script[0] == 'leave':
-                run_client = False
+                msg = {
+                    "command" : "leave",
+                }
+                jsonRequest = json.dumps(msg)
+                try:
+                    sock.sendto(bytes(jsonRequest, 'utf-8'), (udp_host, udp_port))
+                except Exception as e:
+                    print(e)
+                print()
+                break
 
 
             elif splitted_script[0] == '?':
                 display_commands()
                 pass
 
-        else:
-            print("Please Enter Valid Command\n")
+            else:
+                print("Please Enter Valid Command\n")
+
+    exit()
 
 t1 = threading.Thread(target=listen)
 t1.start()

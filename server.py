@@ -22,7 +22,7 @@ joined_addresses = []
 sock.bind((udp_host,udp_port))
 
 
-# Handle Register Command
+# Handle /Register Command
 def handleRegister(request, address):
 	msg = ""
 	if isRegistered(request['handle'], address):
@@ -43,7 +43,7 @@ def handleRegister(request, address):
 	sock.sendto(json_response, address)
 
 
-# Handle Join Command
+# Handle /Join Command
 def handleJoin(message, address):
 	ip = message[0]
 	port = int(message[1])
@@ -68,7 +68,7 @@ def handleJoin(message, address):
 	print("Address ", address, " has connected")
 	
 
-# Handle All Command
+# Handle /All Command
 def handleAll(message, address):
 	src_user = getUsername(address)
 	res = {
@@ -80,7 +80,7 @@ def handleAll(message, address):
 		sock.sendto(json_response, user['address'])
 
 
-# Handle Message Command
+# Handle /Message Command
 def handleMsg(message, address, sender):
 	
 	msg = ""
@@ -116,7 +116,18 @@ def handleMsg(message, address, sender):
 		sock.sendto(json_response2, address)
 	
 
+# Handle /leave Command
 def handleLeave(address):
+	if address not in joined_addresses:
+		res = {
+			"command": "error",
+			"message": "Error: Disconnection failed. Please connect to the server first."
+		}
+		json_response = json.dumps(res).encode('utf-8')
+		sock.sendto(json_response, address)
+		return
+
+	
 	for user in registered_users:
 		if user['address'] == address:
 			registered_users.remove(user)
@@ -129,6 +140,7 @@ def handleLeave(address):
 	}
 	json_response = json.dumps(res).encode('utf-8')
 	sock.sendto(json_response, address)
+
 
 # Send JSON if Not Registered
 def notRegistered(message, address):
@@ -196,11 +208,19 @@ def broadcastMessages():
 					handleMsg(message, address, getUsername(address))
 
 			# HANDLING LEAVE COMMAND
-			elif message['command'] == "leave" and address in joined_addresses:
+			elif message['command'] == "leave":
 				handleLeave(address)
 
-			else:
+			elif address not in joined_addresses:
 				notJoined(address)
+
+			else: 
+				res = {
+					"command": "error",
+					"message": "Error: Command not found."
+				}
+				json_response = json.dumps(res).encode('utf-8')
+				sock.sendto(json_response, address)
 			
 
 # Check if user is registered
