@@ -49,10 +49,11 @@ def handleJoin(message, address):
 	port = int(message[1])
 
 	if(udp_host == ip and udp_port == port ):
-		msg = "Warning: You are already joined in to Message Board"
+		msg = "Warning: You are already joined in to the Message Board."
 		if(address not in joined_addresses):
 			joined_addresses.append(address)
 			msg = "Connection to the Message Board Server is successful!"
+			print("Address ", address, " has connected")
 		res = {
 			"command": "Success",
 			"message": msg
@@ -65,7 +66,6 @@ def handleJoin(message, address):
 	
 	json_response = json.dumps(res).encode('utf-8')
 	sock.sendto(json_response, address)
-	print("Address ", address, " has connected")
 	
 
 # Handle All Command
@@ -135,7 +135,7 @@ def notRegistered(message, address):
 	if not isRegistered("", address):
 		res = {
 			"command": 'error',
-			"message": 'Error: Please Register first before using this command'
+			"message": 'Error: Please register first before using this command'
 		}
 		json_response = json.dumps(res).encode('utf-8')
 		sock.sendto(json_response, address)
