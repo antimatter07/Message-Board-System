@@ -4,6 +4,7 @@ import socket
 import json
 import sys
 import threading
+import select
 
 def display_commands():
     print('---------------------------------------------------------------------------')
@@ -30,7 +31,7 @@ def register_user(client_handle):
 sock = socket.socket(socket.AF_INET,socket.SOCK_DGRAM)  
 udp_host = "127.0.0.1"		        # Server IP
 udp_port = 12345                    # Server Port
-
+sock.settimeout(5)
 
 print('Welcome to the UDP Message Board! Please be informed of the following commands:')
 display_commands()
@@ -40,21 +41,25 @@ print ("\t Server IP: ", udp_host)
 print ("\t Server Port: ", udp_port)
 print()
 
+sock.setblocking(0)
+
 def listen():
     while True:
         try:
-            data, server_addr = sock.recvfrom(1024)
+            ready = select.select([sock], [], [], 5)
+            if ready[0]:
+                data, server_addr = sock.recvfrom(1024)
+                server_response = json.loads(data)
+                print(server_response['message'], "\n")
 
-            server_response = json.loads(data)
-
-            print(server_response['message'], "\n")
         except Exception as e:
-            pass
+            print("Error: Connection to the Message Board Server has failed! Please check IP Address and Port Number.")
 
 def send():
     has_joined = False                  # To check if the client has joined a server
 
     while True:
+
         input_script = input()
 
         slash = input_script[0]
